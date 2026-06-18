@@ -76,7 +76,7 @@ Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\
 
 ## Credits
 
-Zeyadstrap is based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap). Zeyadstrap uses the [WPF UI](https://github.com/lepoco/wpfui) library and maintains a fork at [bloxstraplabs/wpfui](https://github.com/bloxstraplabs/wpfui).
+Zeyadstrap is based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap). Zeyadstrap uses the [WPF UI](https://github.com/lepoco/wpfui) library and uses the bloxstrap fork at [bloxstraplabs/wpfui](https://github.com/bloxstraplabs/wpfui).
 
 ## License
 
