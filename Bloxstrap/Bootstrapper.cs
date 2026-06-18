@@ -1272,6 +1272,22 @@ namespace Bloxstrap
 
             Directory.CreateDirectory(Paths.Modifications);
 
+            BuilderIconColorizer.RemoveModFiles();
+
+            if (!IsStudioLaunch && App.Settings.Prop.IconColorEnabled)
+            {
+                try
+                {
+                    BuilderIconColorizer.GenerateModFiles(_latestVersionDirectory, App.Settings.Prop.IconColor);
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Failed to generate icon color mod");
+                    App.Logger.WriteException(LOG_IDENT, ex);
+                    success = false;
+                }
+            }
+
             // check custom font mod
             // instead of replacing the fonts themselves, we'll just alter the font family manifests
 

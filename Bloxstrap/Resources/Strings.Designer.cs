@@ -3307,6 +3307,24 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Changes the color of Roblox's in-game BuilderIcons UI font..
+        /// </summary>
+        public static string Menu_Mods_Misc_IconColor_Description {
+            get {
+                return ResourceManager.GetString("Menu.Mods.Misc.IconColor.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Icon color.
+        /// </summary>
+        public static string Menu_Mods_Misc_IconColor_Title {
+            get {
+                return ResourceManager.GetString("Menu.Mods.Misc.IconColor.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage custom Roblox mods here..
         /// </summary>
         public static string Menu_Mods_OpenModsFolder_Description {

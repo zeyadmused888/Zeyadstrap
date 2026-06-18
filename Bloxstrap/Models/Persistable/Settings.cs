@@ -22,6 +22,8 @@ namespace Bloxstrap.Models.Persistable
         public bool DebugDisableVersionPackageCleanup { get; set; } = false;
         public string? SelectedCustomTheme { get; set; } = null;
         public WebEnvironment WebEnvironment { get; set; } = WebEnvironment.Production;
+        public bool IconColorEnabled { get; set; } = false;
+        public string IconColor { get; set; } = "#FFFFFF";
 
         // integration configuration
         public bool EnableActivityTracking { get; set; } = true;

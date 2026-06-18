@@ -67,6 +67,49 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         public ICommand OpenCompatSettingsCommand => new RelayCommand(OpenCompatSettings);
 
+        public ICommand OpenIconColorPickerCommand => new RelayCommand(OpenIconColorPicker);
+
+        public IconColorModPresetTask IconColorTask { get; } = new();
+
+        public bool IconColorEnabled
+        {
+            get => IconColorTask.Enabled;
+            set
+            {
+                App.Settings.Prop.IconColorEnabled = value;
+                IconColorTask.Enabled = value;
+            }
+        }
+
+        public string IconColor
+        {
+            get => IconColorTask.Color;
+            set
+            {
+                App.Settings.Prop.IconColor = BuilderIconColorizer.IsValidHexColor(value) ? value.ToUpperInvariant() : value;
+                IconColorTask.Color = App.Settings.Prop.IconColor;
+                OnPropertyChanged(nameof(IconColorPreview));
+            }
+        }
+
+        public string IconColorPreview => BuilderIconColorizer.IsValidHexColor(IconColor) ? IconColor : "#FFFFFF";
+
+        private void OpenIconColorPicker()
+        {
+            using var dialog = new System.Windows.Forms.ColorDialog
+            {
+                AllowFullOpen = true,
+                AnyColor = true,
+                FullOpen = true,
+                Color = System.Drawing.ColorTranslator.FromHtml(IconColorPreview)
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            IconColor = $"#{dialog.Color.R:X2}{dialog.Color.G:X2}{dialog.Color.B:X2}";
+        }
+
         public ModPresetTask OldAvatarBackgroundTask { get; } = new("OldAvatarBackground", @"ExtraContent\places\Mobile.rbxl", "OldAvatarBackground.rbxl");
 
         public ModPresetTask OldCharacterSoundsTask { get; } = new("OldCharacterSounds", new()
