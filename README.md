@@ -47,9 +47,9 @@ NO, I JUST SAID ITS NOT. LOOK AT THE SOURCE CODE!!
 
 **Can using this get me banned from Roblox?**
 
-No, it wont ban you since it doesn't interact with ROBLOX's binary and code. For more information check out Zeyadstrap's explanation: https://github.com/zeyadmused888/Zeyadstrap 
+No, it wont ban you since it doesn't interact with ROBLOX's binary and code. For more information check out bloxstraps explanation: https://bloxstraplabs.com/wiki/info/bloxstrap-and-bans 
 
-**Is this official Zeyadstrap?**
+**Is this official Bloxstrap?**
 
 No, read the repo name.
 
