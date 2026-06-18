@@ -53,6 +53,19 @@ namespace Bloxstrap.Integrations
             _rpcClient.Initialize();
         }
 
+        private static string SanitizeImageKey(string? keyOrUrl)
+        {
+            if (string.IsNullOrWhiteSpace(keyOrUrl))
+                return string.Empty;
+
+            // Discord Rich Presence only supports image asset keys uploaded to the app.
+            // If the value looks like a URL, fall back to a default asset key.
+            if (keyOrUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || keyOrUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                return "roblox";
+
+            return keyOrUrl;
+        }
+
         public void ProcessRPCMessage(Message message, bool implicitUpdate = true)
         {
             const string LOG_IDENT = "DiscordRichPresence::ProcessRPCMessage";
@@ -120,8 +133,8 @@ namespace Bloxstrap.Integrations
 
                 if (_currentPresence != null)
                 {
-                    _currentPresence.Assets.SmallImageKey = smallUrl;
-                    _currentPresence.Assets.LargeImageKey = largeUrl;
+                    _currentPresence.Assets.SmallImageKey = SanitizeImageKey(smallUrl);
+                    _currentPresence.Assets.LargeImageKey = SanitizeImageKey(largeUrl);
                 }
             }
             else if (smallImg != null)
@@ -137,7 +150,7 @@ namespace Bloxstrap.Integrations
                 AddToThumbnailCache((ulong)smallImg, url);
 
                 if (_currentPresence != null)
-                    _currentPresence.Assets.SmallImageKey = url;
+                    _currentPresence.Assets.SmallImageKey = SanitizeImageKey(url);
             }
             else if (largeImg != null)
             {
@@ -152,7 +165,7 @@ namespace Bloxstrap.Integrations
                 AddToThumbnailCache((ulong)largeImg, url);
 
                 if (_currentPresence != null)
-                    _currentPresence.Assets.LargeImageKey = url;
+                    _currentPresence.Assets.LargeImageKey = SanitizeImageKey(url);
             }
 
             _smallImgBeingFetched = null;
@@ -252,7 +265,7 @@ namespace Bloxstrap.Integrations
                         }
                         else
                         {
-                            _currentPresence.Assets.SmallImageKey = entry.Url;
+                            _currentPresence.Assets.SmallImageKey = SanitizeImageKey(entry.Url);
                             _smallImgBeingFetched = null;
                         }
                     }
@@ -287,7 +300,7 @@ namespace Bloxstrap.Integrations
                         }
                         else
                         {
-                            _currentPresence.Assets.LargeImageKey = entry.Url;
+                            _currentPresence.Assets.LargeImageKey = SanitizeImageKey(entry.Url);
                             _largeImgBeingFetched = null;
                         }
                     }
@@ -406,9 +419,9 @@ namespace Bloxstrap.Integrations
                 Buttons = GetButtons(),
                 Assets = new Assets
                 {
-                    LargeImageKey = icon,
+                    LargeImageKey = SanitizeImageKey(icon),
                     LargeImageText = universeDetails.Data.Name,
-                    SmallImageKey = smallImage,
+                    SmallImageKey = SanitizeImageKey(smallImage),
                     SmallImageText = smallImageText
                 }
             };

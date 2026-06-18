@@ -43,13 +43,13 @@ Windows smartscreen WILL warn you and trust me THIS ISNT MALWARE IM NOT EVEN JOK
 
 **Is this malware?**
 
-NO, I JUST SAID ITS NOT LOOK AT THE SOURCE CODE!!
+NO, I JUST SAID ITS NOT. LOOK AT THE SOURCE CODE!!
 
 **Can using this get me banned from Roblox?**
 
-No, it wont ban you since it doesn't interact with ROBLOX's binary and code. For more information check out bloxstraps explanation: https://bloxstraplabs.com/wiki/info/bloxstrap-and-bans 
+No, it wont ban you since it doesn't interact with ROBLOX's binary and code. For more information check out Zeyadstrap's explanation: https://github.com/zeyadmused888/Zeyadstrap 
 
-**Is this official Bloxstrap?**
+**Is this official Zeyadstrap?**
 
 No, read the repo name.
 
@@ -68,7 +68,7 @@ To publish an executable:
 dotnet publish Bloxstrap\Bloxstrap.csproj -c Release -r win-x64 --self-contained false
 ```
 
-The published executable will be in:
+The published executable will be `Zeyadstrap.exe` in:
 
 ```text
 Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\
@@ -76,7 +76,7 @@ Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\
 
 ## Credits
 
-Zeyadstrap is based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap). Bloxstrap uses the [WPF UI](https://github.com/lepoco/wpfui) library and maintains a fork at [bloxstraplabs/wpfui](https://github.com/bloxstraplabs/wpfui).
+Zeyadstrap is based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap). Zeyadstrap uses the [WPF UI](https://github.com/lepoco/wpfui) library and maintains a fork at [bloxstraplabs/wpfui](https://github.com/bloxstraplabs/wpfui).
 
 ## License
 

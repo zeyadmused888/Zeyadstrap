@@ -30,7 +30,7 @@ jobs:
       id: upload-artifact
       uses: actions/upload-artifact@v7
       with:
-        name: Bloxstrap (Release) (${{ github.sha }})
+        name: Zeyadstrap (Release) (${{ github.sha }})
         path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\*
 
   release:
@@ -59,7 +59,7 @@ jobs:
         with:
           draft: true
           files: Bloxstrap-${{ github.ref_name }}.exe
-          name: Bloxstrap ${{ github.ref_name }}
+          name: Zeyadstrap ${{ github.ref_name }}
 
   release-test:
     needs: build
@@ -87,4 +87,4 @@ jobs:
         with:
           draft: true
           files: Bloxstrap-${{ github.ref_name }}.exe
-          name: Bloxstrap ${{ github.ref_name }}
+          name: Zeyadstrap ${{ github.ref_name }}

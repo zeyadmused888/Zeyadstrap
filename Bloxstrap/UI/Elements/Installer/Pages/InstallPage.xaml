@@ -14,10 +14,34 @@
       Loaded="UiPage_Loaded">
 
     <StackPanel Margin="0,0,14,14">
+        <Border Margin="0,0,0,12" CornerRadius="8" Padding="12">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Offset="0" Color="{DynamicResource SystemAccentColorSecondary}" />
+                    <GradientStop Offset="1" Color="{DynamicResource SystemAccentColorTertiary}" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Width="40" Height="40" Margin="0,0,12,0" RenderOptions.BitmapScalingMode="HighQuality" Source="pack://application:,,,/Images/Zeyadstrap.png" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="Zeyadstrap Installer" FontSize="18" FontWeight="SemiBold" Foreground="White" />
+                    <TextBlock Text="{x:Static resources:Strings.Installer_Install_Location_Text}" Foreground="#DDFFFFFF" FontSize="12" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
         <TextBlock FontSize="20" FontWeight="SemiBold" Text="{x:Static resources:Strings.Installer_Install_Location_Title}" TextWrapping="Wrap" />
         <TextBlock FontSize="14" Text="{x:Static resources:Strings.Installer_Install_Location_Text}" TextWrapping="Wrap" />
 
         <ui:Card Margin="0,8,0,0" Padding="12">
+            <ui:Card.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
+            </ui:Card.BorderBrush>
+            <ui:Card.BorderThickness>1</ui:Card.BorderThickness>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -68,7 +92,7 @@
         </Grid>
 
         <TextBlock FontSize="20" FontWeight="SemiBold" Text="{x:Static resources:Strings.Common_Analytics}" TextWrapping="Wrap" Margin="0,16,0,0" />
-        <controls:MarkdownTextBlock FontSize="14" MarkdownText="{Binding Source={x:Static resources:Strings.Menu_Bloxstrap_Analytics_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://bloxstraplabs.com/wiki/info/privacy-policy/'}" TextWrapping="Wrap" />
+        <controls:MarkdownTextBlock FontSize="14" MarkdownText="{Binding Source={x:Static resources:Strings.Menu_Bloxstrap_Analytics_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://github.com/zeyadmused888/Zeyadstrap'}" TextWrapping="Wrap" />
 
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_Bloxstrap_Analytics_Title}">
