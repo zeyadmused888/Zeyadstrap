@@ -88,13 +88,6 @@
 
         <TextBlock Text="{x:Static resources:Strings.Menu_About_Contributors}" FontWeight="Medium" FontSize="20" Margin="0,16,0,0" />
         <TextBlock Text="{x:Static resources:Strings.Menu_About_Contributors_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
-
-        <ui:CardAction Margin="0,8,0,0" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="https://github.com/bloxstraplabs/bloxstrap">
-            <StackPanel>
-                <TextBlock FontSize="14" FontWeight="Medium" Text="Bloxstrap" />
-                <controls:MarkdownTextBlock FontSize="13" MarkdownText="Bloxstrap is the original project that served as the foundation for Zeyadstrap. Zeyadstrap is a fork which adapted and extended Bloxstrap's core features, UI, and architecture to implement new branding, fixes, and additional functionality. Visit the [Bloxstrap repository](https://github.com/bloxstraplabs/bloxstrap) to see the upstream project." />
-            </StackPanel>
-        </ui:CardAction>
         <Grid Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />

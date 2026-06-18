@@ -21,7 +21,7 @@ This is a fork that will also almost never update and only will update when the 
 oh yea btw Zeyadstrap is only on Windows, go try out [Appleblox](https://github.com/AppleBlox/appleblox) if your on MacOS.
 
 (this is vibecoded because idk how to code in cs. I'll learn it later though trust me)
-
+(also some translations are probably not gonna be correct)
 ## Features
 
 - Discord RPC so your friends can see what your playing

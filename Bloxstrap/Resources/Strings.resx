@@ -376,7 +376,7 @@ Would you like to upgrade your currently installed version?</value>
     <value>Code</value>
   </data>
   <data name="Menu.About.Contributors.Description" xml:space="preserve">
-    <value>These are the people who have made notable contributions to Zeyadstrap, helping make it what it is.</value>
+    <value>These are the people who have made notable contributions to Bloxstrap, helping make it what it is and allowing me to make this fork.</value>
   </data>
   <data name="Menu.About.Contributors.FeatureIdeas" xml:space="preserve">
     <value>Feature Ideas</value>
