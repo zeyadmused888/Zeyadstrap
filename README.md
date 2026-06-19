@@ -30,6 +30,7 @@ oh yea btw Zeyadstrap is only on Windows, go try out [Appleblox](https://github.
 - Server location loop up, I think, I dunno
 - Graphics and UI related Fast Flags that might work
 - Custom bootstrapper appearance thingy ma thing
+- modpacks for studio or the roblox player 
 
 ## Installing
 
