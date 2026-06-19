@@ -2,7 +2,7 @@
 {
     public class ActivityWatcher : IDisposable
     {
-        private const string GameMessageEntry                = "[FLog::Output] [BloxstrapRPC]";
+        private static readonly string[] GameMessageEntries       = { "[FLog::Output] [BloxstrapRPC]", "[FLog::Output] [ZeyadstrapRPC]" };
         private const string GameJoiningEntry                = "[FLog::Output] ! Joining game";
 
         // these entries are technically volatile!
@@ -23,7 +23,7 @@
         private const string GameJoiningUniversePattern      = @"universeid:([0-9]+).*userid:([0-9]+)";
         private const string GameJoiningUDMUXPattern         = @"UDMUX Address = ([0-9\.]+), Port = [0-9]+ \| RCC Server Address = ([0-9\.]+), Port = [0-9]+";
         private const string GameJoinedEntryPattern          = @"serverId: ([0-9\.]+)\|[0-9]+";
-        private const string GameMessageEntryPattern         = @"\[BloxstrapRPC\] (.*)";
+        private const string GameMessageEntryPattern         = @"\[(?:Bloxstrap|Zeyadstrap)RPC\] (.*)";
 
         private int _logEntriesRead = 0;
         private bool _teleportMarker = false;
@@ -303,7 +303,7 @@
                     _teleportMarker = true;
                     _reservedTeleportMarker = true;
                 }
-                else if (logMessage.StartsWith(GameMessageEntry))
+                else if (GameMessageEntries.Any(logMessage.StartsWith))
                 {
                     var match = Regex.Match(logMessage, GameMessageEntryPattern);
 

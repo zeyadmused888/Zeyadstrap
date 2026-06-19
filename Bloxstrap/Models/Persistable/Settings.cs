@@ -24,6 +24,8 @@ namespace Bloxstrap.Models.Persistable
         public WebEnvironment WebEnvironment { get; set; } = WebEnvironment.Production;
         public bool IconColorEnabled { get; set; } = false;
         public string IconColor { get; set; } = "#FFFFFF";
+        public ObservableCollection<string> EnabledPlayerModPacks { get; set; } = new();
+        public ObservableCollection<string> EnabledStudioModPacks { get; set; } = new();
 
         // integration configuration
         public bool EnableActivityTracking { get; set; } = true;

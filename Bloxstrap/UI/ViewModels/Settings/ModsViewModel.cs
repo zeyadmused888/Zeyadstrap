@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 using Microsoft.Win32;
@@ -16,7 +17,72 @@ namespace Bloxstrap.UI.ViewModels.Settings
 {
     public class ModsViewModel : NotifyPropertyChangedViewModel
     {
+        public class ModPackEntry : NotifyPropertyChangedViewModel
+        {
+            private readonly ObservableCollection<string> _enabledPacks;
+
+            public string Name { get; }
+
+            public bool IsEnabled
+            {
+                get => _enabledPacks.Contains(Name);
+                set
+                {
+                    if (value && !_enabledPacks.Contains(Name))
+                        _enabledPacks.Add(Name);
+                    else if (!value && _enabledPacks.Contains(Name))
+                        _enabledPacks.Remove(Name);
+
+                    OnPropertyChanged(nameof(IsEnabled));
+                }
+            }
+
+            public ModPackEntry(string name, ObservableCollection<string> enabledPacks)
+            {
+                Name = name;
+                _enabledPacks = enabledPacks;
+            }
+        }
+
         private void OpenModsFolder() => Process.Start("explorer.exe", Paths.Modifications);
+
+        private void OpenModPacksFolder()
+        {
+            Directory.CreateDirectory(Paths.PlayerModPacks);
+            Directory.CreateDirectory(Paths.StudioModPacks);
+            Process.Start("explorer.exe", Paths.ModPacks);
+        }
+
+        private ObservableCollection<ModPackEntry> LoadModPacks(string root, ObservableCollection<string> enabledPacks)
+        {
+            Directory.CreateDirectory(root);
+
+            var existingPacks = Directory.GetDirectories(root)
+                .Select(Path.GetFileName)
+                .Where(x => !String.IsNullOrEmpty(x))
+                .Cast<string>()
+                .OrderBy(x => x)
+                .ToList();
+
+            foreach (string packName in enabledPacks.Where(x => !existingPacks.Contains(x)).ToList())
+                enabledPacks.Remove(packName);
+
+            return new ObservableCollection<ModPackEntry>(existingPacks.Select(x => new ModPackEntry(x, enabledPacks)));
+        }
+
+        private void RefreshModPacks()
+        {
+            PlayerModPacks = LoadModPacks(Paths.PlayerModPacks, App.Settings.Prop.EnabledPlayerModPacks);
+            StudioModPacks = LoadModPacks(Paths.StudioModPacks, App.Settings.Prop.EnabledStudioModPacks);
+
+            OnPropertyChanged(nameof(PlayerModPacks));
+            OnPropertyChanged(nameof(StudioModPacks));
+        }
+
+        public ModsViewModel()
+        {
+            RefreshModPacks();
+        }
 
         private readonly Dictionary<string, byte[]> FontHeaders = new()
         {
@@ -58,6 +124,16 @@ namespace Bloxstrap.UI.ViewModels.Settings
         }
 
         public ICommand OpenModsFolderCommand => new RelayCommand(OpenModsFolder);
+
+        public ICommand OpenModPacksFolderCommand => new RelayCommand(OpenModPacksFolder);
+
+        public ICommand RefreshModPacksCommand => new RelayCommand(RefreshModPacks);
+
+        public ObservableCollection<ModPackEntry> PlayerModPacks { get; private set; }
+            = new();
+
+        public ObservableCollection<ModPackEntry> StudioModPacks { get; private set; }
+            = new();
 
         public Visibility ChooseCustomFontVisibility => !String.IsNullOrEmpty(TextFontTask.NewState) ? Visibility.Collapsed : Visibility.Visible;
 

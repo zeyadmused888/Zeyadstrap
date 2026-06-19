@@ -23,6 +23,10 @@ namespace Bloxstrap
         public const string ProjectDownloadLink = "https://github.com/zeyadmused888/Zeyadstrap/releases/latest";
         public const string ProjectHelpLink = "https://github.com/zeyadmused888/Zeyadstrap/issues";
         public const string ProjectSupportLink = "https://github.com/zeyadmused888/Zeyadstrap/issues/new";
+        public static string DiscordApplicationId => Assembly.GetExecutingAssembly()
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(x => x.Key == "DiscordApplicationId")?.Value ?? "";
+        public const string DiscordDefaultIconAsset = "zeyadstrap";
 
         public const string RobloxPlayerAppName = "RobloxPlayerBeta";
         public const string RobloxStudioAppName = "RobloxStudioBeta";

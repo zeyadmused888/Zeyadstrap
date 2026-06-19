@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using Bloxstrap.Models.RobloxApi;
 using DiscordRPC;
 
@@ -6,7 +6,7 @@ namespace Bloxstrap.Integrations
 {
     public class DiscordRichPresence : IDisposable
     {
-        private readonly DiscordRpcClient _rpcClient = new("1005469189907173486");
+        private readonly DiscordRpcClient? _rpcClient;
         private readonly ActivityWatcher _activityWatcher;
         private readonly Queue<Message> _messageQueue = new();
 
@@ -26,6 +26,14 @@ namespace Bloxstrap.Integrations
             const string LOG_IDENT = "DiscordRichPresence";
 
             _activityWatcher = activityWatcher;
+
+            if (String.IsNullOrWhiteSpace(App.DiscordApplicationId))
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Discord application ID is not configured, disabling Discord Rich Presence");
+                return;
+            }
+
+            _rpcClient = new DiscordRpcClient(App.DiscordApplicationId);
 
             _activityWatcher.OnGameJoin += (_, _) => Task.Run(() => SetCurrentGame());
             _activityWatcher.OnGameLeave += (_, _) => Task.Run(() => SetCurrentGame());
@@ -61,7 +69,7 @@ namespace Bloxstrap.Integrations
             // Discord Rich Presence only supports image asset keys uploaded to the app.
             // If the value looks like a URL, fall back to a default asset key.
             if (keyOrUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || keyOrUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                return "roblox";
+                return App.DiscordDefaultIconAsset;
 
             return keyOrUrl;
         }
@@ -331,7 +339,7 @@ namespace Bloxstrap.Integrations
             if (_visible)
                 UpdatePresence();
             else
-                _rpcClient.ClearPresence();
+                _rpcClient?.ClearPresence();
         }
 
         public async Task<bool> SetCurrentGame()
@@ -349,9 +357,9 @@ namespace Bloxstrap.Integrations
                 return true;
             }
 
-            string icon = "roblox";
+            string icon = App.DiscordDefaultIconAsset;
             string smallImageText = "Roblox";
-            string smallImage = "roblox";
+            string smallImage = App.DiscordDefaultIconAsset;
             
 
             var activity = _activityWatcher.Data;
@@ -448,18 +456,19 @@ namespace Bloxstrap.Integrations
 
             if (!App.Settings.Prop.HideRPCButtons)
             {
-                bool show = false;
+                bool canJoinServer = data.ServerType switch
+                {
+                    ServerType.Public => !String.IsNullOrEmpty(data.JobId),
+                    ServerType.Private => !String.IsNullOrEmpty(data.AccessCode),
+                    ServerType.Reserved => !String.IsNullOrEmpty(data.RPCLaunchData),
+                    _ => false
+                };
 
-                if (data.ServerType == ServerType.Public)
-                    show = true;
-                else if (data.ServerType == ServerType.Reserved && !String.IsNullOrEmpty(data.RPCLaunchData))
-                    show = true;
-
-                if (show)
+                if (canJoinServer)
                 {
                     buttons.Add(new Button
                     {
-                        Label = "Join server",
+                        Label = "Join my server",
                         Url = data.GetInviteDeeplink()
                     });
                 }
@@ -481,21 +490,21 @@ namespace Bloxstrap.Integrations
             if (_currentPresence is null)
             {
                 App.Logger.WriteLine(LOG_IDENT, $"Presence is empty, clearing");
-                _rpcClient.ClearPresence();
+                _rpcClient?.ClearPresence();
                 return;
             }
 
             App.Logger.WriteLine(LOG_IDENT, $"Updating presence");
 
             if (_visible)
-                _rpcClient.SetPresence(_currentPresence);
+                _rpcClient?.SetPresence(_currentPresence);
         }
 
         public void Dispose()
         {
             App.Logger.WriteLine("DiscordRichPresence::Dispose", "Cleaning up Discord RPC and Presence");
-            _rpcClient.ClearPresence();
-            _rpcClient.Dispose();
+            _rpcClient?.ClearPresence();
+            _rpcClient?.Dispose();
             GC.SuppressFinalize(this);
         }
     }

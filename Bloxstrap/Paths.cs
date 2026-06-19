@@ -22,6 +22,9 @@
         public static string Integrations { get; private set; } = "";
         public static string Versions { get; private set; } = "";
         public static string Modifications { get; private set; } = "";
+        public static string ModPacks { get; private set; } = "";
+        public static string PlayerModPacks => Path.Combine(ModPacks, "Player");
+        public static string StudioModPacks => Path.Combine(ModPacks, "Studio");
         public static string CustomThemes { get; private set; } = "";
 
         public static string Application { get; private set; } = "";
@@ -38,6 +41,7 @@
             Integrations = Path.Combine(Base, "Integrations");
             Versions = Path.Combine(Base, "Versions");
             Modifications = Path.Combine(Base, "Modifications");
+            ModPacks = Path.Combine(Base, "ModPacks");
             CustomThemes = Path.Combine(Base, "CustomThemes");
 
             Application = Path.Combine(Base, $"{App.ProjectName}.exe");

@@ -1,4 +1,4 @@
-<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.ModsPage"
+﻿<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.ModsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -48,6 +48,42 @@
             </ui:CardAction>
         </Grid>
 
+        <TextBlock Text="Modpacks" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" />
+        <TextBlock Text="Put folders in ModPacks\Player or ModPacks\Studio, then choose one or more packs to apply on launch." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+            <ui:Button Icon="Folder24" Content="Open modpacks folder" Command="{Binding OpenModPacksFolderCommand}" />
+            <ui:Button Margin="8,0,0,0" Icon="ArrowClockwise24" Content="Refresh" Command="{Binding RefreshModPacksCommand}" />
+        </StackPanel>
+
+        <Grid Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                <TextBlock Text="Player packs" FontSize="14" FontWeight="Medium" />
+                <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding PlayerModPacks}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Margin="0,2,0,2" Content="{Binding Name}" IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Margin="4,0,0,0">
+                <TextBlock Text="Studio packs" FontSize="14" FontWeight="Medium" />
+                <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding StudioModPacks}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Margin="0,2,0,2" Content="{Binding Name}" IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Grid>
         <TextBlock Text="{x:Static resources:Strings.Common_Presets}" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" />
 
         <controls:OptionControl 

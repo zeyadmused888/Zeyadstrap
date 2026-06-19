@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\Directory.Build.local.props" Condition="Exists('..\Directory.Build.local.props')" />
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -15,6 +17,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <DiscordApplicationId Condition="'$(DiscordApplicationId)' == ''"></DiscordApplicationId>
   </PropertyGroup>
     
   <ItemGroup>
@@ -80,6 +83,10 @@
       <_Parameter2>$(COMPUTERNAME)\$(USERNAME)</_Parameter2>
       <_Parameter3>$(CommitHash)</_Parameter3>
       <_Parameter4>$(CommitRef)</_Parameter4>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>DiscordApplicationId</_Parameter1>
+      <_Parameter2>$(DiscordApplicationId)</_Parameter2>
     </AssemblyAttribute>
   </ItemGroup>
 

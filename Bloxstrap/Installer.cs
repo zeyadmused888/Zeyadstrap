@@ -308,6 +308,7 @@ namespace Bloxstrap
                 cleanupSequence.AddRange(new List<Action>
                 {
                     () => Directory.Delete(Paths.Modifications, true),
+                    () => Directory.Delete(Paths.ModPacks, true),
                     () => Directory.Delete(Paths.Logs, true),
 
                     () => File.Delete(App.Settings.FileLocation)

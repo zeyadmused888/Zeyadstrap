@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -13,6 +13,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Menu.About.Contributors.Description" xml:space="preserve">
-    <value>Estas son las personas que han realizado contribuciones notables al proyecto Bloxstrap, ayudando a convertirlo en lo que es y permitiéndome crear este fork.</value>
+    <value>Estas son las personas que han realizado contribuciones notables al proyecto Zeyadstrap, ayudando a convertirlo en lo que es y permitiéndome crear este fork.</value>
   </data>
 </root>

@@ -1254,6 +1254,22 @@ namespace Bloxstrap
             Process.Start(Paths.Process, $"-backgroundupdater {_launchMode}");
         }
 
+        private IEnumerable<string> GetSelectedModPackFolders()
+        {
+            var selectedPacks = IsStudioLaunch ? App.Settings.Prop.EnabledStudioModPacks : App.Settings.Prop.EnabledPlayerModPacks;
+            string root = IsStudioLaunch ? Paths.StudioModPacks : Paths.PlayerModPacks;
+
+            foreach (string packName in selectedPacks)
+            {
+                if (String.IsNullOrWhiteSpace(packName) || packName != Path.GetFileName(packName))
+                    continue;
+
+                string path = Path.Combine(root, packName);
+
+                if (Directory.Exists(path))
+                    yield return path;
+            }
+        }
         private async Task<bool> ApplyModifications()
         {
             const string LOG_IDENT = "Bootstrapper::ApplyModifications";
@@ -1348,52 +1364,65 @@ namespace Bloxstrap
                 Directory.Delete(modFontFamiliesFolder, true);
             }
 
-            foreach (string file in Directory.GetFiles(Paths.Modifications, "*.*", SearchOption.AllDirectories))
+            var modRoots = new List<string> { Paths.Modifications };
+            modRoots.AddRange(GetSelectedModPackFolders());
+
+            foreach (string modRoot in modRoots)
             {
-                if (_cancelTokenSource.IsCancellationRequested)
-                    return true;
+                if (!Directory.Exists(modRoot))
+                    continue;
 
-                // get relative directory path
-                string relativeFile = file.Substring(Paths.Modifications.Length + 1);
+                App.Logger.WriteLine(LOG_IDENT, $"Applying mods from {modRoot}");
 
-                // v1.7.0 - README has been moved to the preferences menu now
-                if (relativeFile == "README.txt")
+                foreach (string file in Directory.GetFiles(modRoot, "*.*", SearchOption.AllDirectories))
                 {
-                    File.Delete(file);
-                    continue;
-                }
+                    if (_cancelTokenSource.IsCancellationRequested)
+                        return true;
 
-                if (!App.Settings.Prop.UseFastFlagManager && String.Equals(relativeFile, "ClientSettings\\ClientAppSettings.json", StringComparison.OrdinalIgnoreCase))
-                    continue;
+                    // get relative directory path
+                    string relativeFile = file.Substring(modRoot.Length + 1);
 
-                if (relativeFile.EndsWith(".lock"))
-                    continue;
+                    // v1.7.0 - README has been moved to the preferences menu now
+                    if (relativeFile == "README.txt")
+                    {
+                        if (modRoot == Paths.Modifications)
+                            File.Delete(file);
 
-                modFolderFiles.Add(relativeFile);
+                        continue;
+                    }
 
-                string fileModFolder = Path.Combine(Paths.Modifications, relativeFile);
-                string fileVersionFolder = Path.Combine(_latestVersionDirectory, relativeFile);
+                    if (!App.Settings.Prop.UseFastFlagManager && String.Equals(relativeFile, "ClientSettings\\ClientAppSettings.json", StringComparison.OrdinalIgnoreCase))
+                        continue;
 
-                if (File.Exists(fileVersionFolder) && MD5Hash.FromFile(fileModFolder) == MD5Hash.FromFile(fileVersionFolder))
-                {
-                    App.Logger.WriteLine(LOG_IDENT, $"{relativeFile} already exists in the version folder, and is a match");
-                    continue;
-                }
+                    if (relativeFile.EndsWith(".lock"))
+                        continue;
 
-                Directory.CreateDirectory(Path.GetDirectoryName(fileVersionFolder)!);
+                    if (!modFolderFiles.Contains(relativeFile))
+                        modFolderFiles.Add(relativeFile);
 
-                Filesystem.AssertReadOnly(fileVersionFolder);
-                try
-                {
-                    File.Copy(fileModFolder, fileVersionFolder, true);
+                    string fileVersionFolder = Path.Combine(_latestVersionDirectory, relativeFile);
+
+                    if (File.Exists(fileVersionFolder) && MD5Hash.FromFile(file) == MD5Hash.FromFile(fileVersionFolder))
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"{relativeFile} already exists in the version folder, and is a match");
+                        continue;
+                    }
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(fileVersionFolder)!);
+
                     Filesystem.AssertReadOnly(fileVersionFolder);
-                    App.Logger.WriteLine(LOG_IDENT, $"{relativeFile} has been copied to the version folder");
-                }
-                catch (Exception ex)
-                {
-                    App.Logger.WriteLine(LOG_IDENT, $"Failed to apply modification ({relativeFile})");
-                    App.Logger.WriteException(LOG_IDENT, ex);
-                    success = false;
+                    try
+                    {
+                        File.Copy(file, fileVersionFolder, true);
+                        Filesystem.AssertReadOnly(fileVersionFolder);
+                        App.Logger.WriteLine(LOG_IDENT, $"{relativeFile} has been copied to the version folder");
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Failed to apply modification ({relativeFile})");
+                        App.Logger.WriteException(LOG_IDENT, ex);
+                        success = false;
+                    }
                 }
             }
 
