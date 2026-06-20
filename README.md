@@ -1,4 +1,4 @@
-<p align="center">
+﻿<p align="center">
     <img src="Images/Zeyadstrap-full-dark.png#gh-dark-mode-only" width="380" alt="Zeyadstrap">
     <img src="Images/Zeyadstrap-full-light.png#gh-light-mode-only" width="380" alt="Zeyadstrap">
 </p>
@@ -36,7 +36,7 @@ oh yea btw Zeyadstrap is only on Windows, go try out [Appleblox](https://github.
 
 Download the [latest release of Zeyadstrap](https://github.com/zeyadmused888/Zeyadstrap/releases/latest)!! Extract it first and run it!
 
-You may also need the [.NET 6 Desktop Runtime](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win11-x64&apphost_version=6.0.36&gui=true). If its missing. Download it.
+You may also need the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0). If its missing. Download it.
 
 Windows smartscreen WILL warn you and trust me THIS ISNT MALWARE IM NOT EVEN JOKING just click, "Read more" or somthing like that then click, "Run Anyway"
 
@@ -60,24 +60,24 @@ Clone the repository with submodules, then build with .NET:
 
 ```powershell
 git submodule update --init --recursive
-dotnet build Bloxstrap.sln
+dotnet build Zeyadstrap.sln
 ```
 
 To publish an executable:
 
 ```powershell
-dotnet publish Bloxstrap\Bloxstrap.csproj -c Release -r win-x64 --self-contained false
+dotnet publish Zeyadstrap\Zeyadstrap.csproj -c Release -r win-x64 --self-contained false
 ```
 
 The published executable will be `Zeyadstrap.exe` in:
 
 ```text
-Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\
+Zeyadstrap\bin\Release\net10.0-windows\win-x64\publish\
 ```
 
 ## Credits
 
-Zeyadstrap is based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap). Zeyadstrap uses the [WPF UI](https://github.com/lepoco/wpfui) library and uses the bloxstrap fork at [bloxstraplabs/wpfui](https://github.com/bloxstraplabs/wpfui).
+Zeyadstrap is based on [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap). Zeyadstrap uses the [WPF UI](https://github.com/lepoco/wpfui) library and uses the bloxstrap fork at [bloxstraplabs/wpfui](https://github.com/bloxstraplabs/wpfui) but modified for .NET 10.
 
 ## License
 

@@ -1,0 +1,297 @@
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
+
+using Microsoft.Win32;
+
+using Windows.Win32;
+using Windows.Win32.UI.Shell;
+using Windows.Win32.Foundation;
+
+using CommunityToolkit.Mvvm.Input;
+
+using Zeyadstrap.Models.SettingTasks;
+using Zeyadstrap.AppData;
+
+namespace Zeyadstrap.UI.ViewModels.Settings
+{
+    public class ModsViewModel : NotifyPropertyChangedViewModel
+    {
+        public class ModPackEntry : NotifyPropertyChangedViewModel
+        {
+            private readonly ObservableCollection<string> _enabledPacks;
+            private readonly Action _onChanged;
+
+            public string Name { get; }
+
+            public bool IsEnabled
+            {
+                get => _enabledPacks.Contains(Name);
+                set
+                {
+                    if (value && !_enabledPacks.Contains(Name))
+                        _enabledPacks.Add(Name);
+                    else if (!value && _enabledPacks.Contains(Name))
+                        _enabledPacks.Remove(Name);
+
+                    OnPropertyChanged(nameof(IsEnabled));
+                    _onChanged();
+                }
+            }
+
+            public ModPackEntry(string name, ObservableCollection<string> enabledPacks, Action onChanged)
+            {
+                Name = name;
+                _enabledPacks = enabledPacks;
+                _onChanged = onChanged;
+            }
+        }
+
+        private void OpenModsFolder() => Process.Start("explorer.exe", Paths.Modifications);
+
+        private void OpenModPacksFolder()
+        {
+            Directory.CreateDirectory(Paths.PlayerModPacks);
+            Directory.CreateDirectory(Paths.StudioModPacks);
+            Process.Start("explorer.exe", Paths.ModPacks);
+        }
+
+        private ObservableCollection<ModPackEntry> LoadModPacks(string root, ObservableCollection<string> enabledPacks, Action onChanged)
+        {
+            Directory.CreateDirectory(root);
+
+            var existingPacks = Directory.GetDirectories(root)
+                .Select(Path.GetFileName)
+                .Where(x => !String.IsNullOrEmpty(x))
+                .Cast<string>()
+                .OrderBy(x => x)
+                .ToList();
+
+            foreach (string packName in enabledPacks.Where(x => !existingPacks.Contains(x)).ToList())
+                enabledPacks.Remove(packName);
+
+            return new ObservableCollection<ModPackEntry>(existingPacks.Select(x => new ModPackEntry(x, enabledPacks, onChanged)));
+        }
+
+        private void RefreshModPacks()
+        {
+            PlayerModPacks = LoadModPacks(Paths.PlayerModPacks, App.Settings.Prop.EnabledPlayerModPacks, RefreshConflictWarnings);
+            StudioModPacks = LoadModPacks(Paths.StudioModPacks, App.Settings.Prop.EnabledStudioModPacks, RefreshConflictWarnings);
+
+            OnPropertyChanged(nameof(PlayerModPacks));
+            OnPropertyChanged(nameof(StudioModPacks));
+            RefreshConflictWarnings();
+        }
+
+        private static IEnumerable<string> GetPackFiles(string root, string packName)
+        {
+            if (String.IsNullOrWhiteSpace(packName) || packName != Path.GetFileName(packName))
+                yield break;
+
+            string packPath = Path.Combine(root, packName);
+
+            if (!Directory.Exists(packPath))
+                yield break;
+
+            foreach (string file in Directory.GetFiles(packPath, "*.*", SearchOption.AllDirectories))
+            {
+                string relativeFile = Path.GetRelativePath(packPath, file);
+
+                if (relativeFile.Equals("README.txt", StringComparison.OrdinalIgnoreCase) || relativeFile.EndsWith(".lock", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                yield return relativeFile.Replace('/', '\\');
+            }
+        }
+
+        private static IEnumerable<string> GetConflictWarnings(string label, string root, IEnumerable<string> enabledPacks)
+        {
+            var fileOwners = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string packName in enabledPacks)
+            {
+                foreach (string file in GetPackFiles(root, packName))
+                {
+                    if (!fileOwners.TryGetValue(file, out var owners))
+                        fileOwners[file] = owners = new List<string>();
+
+                    owners.Add(packName);
+                }
+            }
+
+            foreach (var pair in fileOwners.Where(x => x.Value.Count > 1).OrderBy(x => x.Key))
+                yield return $"{label}: {pair.Key} is replaced by {String.Join(", ", pair.Value)}";
+        }
+
+        private void RefreshConflictWarnings()
+        {
+            var warnings = GetConflictWarnings("Player", Paths.PlayerModPacks, App.Settings.Prop.EnabledPlayerModPacks)
+                .Concat(GetConflictWarnings("Studio", Paths.StudioModPacks, App.Settings.Prop.EnabledStudioModPacks))
+                .ToList();
+
+            ModPackConflictWarning = warnings.Any()
+                ? "Some enabled modpacks replace the same files. The later pack may overwrite the earlier one on launch:\n" + String.Join("\n", warnings)
+                : "";
+
+            OnPropertyChanged(nameof(ModPackConflictWarning));
+            OnPropertyChanged(nameof(ModPackConflictWarningVisibility));
+        }
+
+        public ModsViewModel()
+        {
+            RefreshModPacks();
+        }
+
+        private readonly Dictionary<string, byte[]> FontHeaders = new()
+        {
+            { "ttf", new byte[4] { 0x00, 0x01, 0x00, 0x00 } },
+            { "otf", new byte[4] { 0x4F, 0x54, 0x54, 0x4F } },
+            { "ttc", new byte[4] { 0x74, 0x74, 0x63, 0x66 } } 
+        };
+
+        private void ManageCustomFont()
+        {
+            if (!String.IsNullOrEmpty(TextFontTask.NewState))
+            {
+                TextFontTask.NewState = "";
+            }
+            else
+            {
+                var dialog = new OpenFileDialog
+                {
+                    Filter = $"{Strings.Menu_FontFiles}|*.ttf;*.otf;*.ttc"
+                };
+
+                if (dialog.ShowDialog() != true)
+                    return;
+
+                string type = dialog.FileName.Substring(dialog.FileName.Length-3, 3).ToLowerInvariant();
+
+                if (!FontHeaders.ContainsKey(type) 
+                    || !FontHeaders.Any(x => File.ReadAllBytes(dialog.FileName).Take(4).SequenceEqual(x.Value)))
+                {
+                    Frontend.ShowMessageBox(Strings.Menu_Mods_Misc_CustomFont_Invalid, MessageBoxImage.Error);
+                    return;
+                }
+
+                TextFontTask.NewState = dialog.FileName;
+            }
+
+            OnPropertyChanged(nameof(ChooseCustomFontVisibility));
+            OnPropertyChanged(nameof(DeleteCustomFontVisibility));
+        }
+
+        public ICommand OpenModsFolderCommand => new RelayCommand(OpenModsFolder);
+
+        public ICommand OpenModPacksFolderCommand => new RelayCommand(OpenModPacksFolder);
+
+        public ICommand RefreshModPacksCommand => new RelayCommand(RefreshModPacks);
+
+        public ObservableCollection<ModPackEntry> PlayerModPacks { get; private set; }
+            = new();
+
+        public ObservableCollection<ModPackEntry> StudioModPacks { get; private set; }
+            = new();
+
+        public string ModPackConflictWarning { get; private set; } = "";
+
+        public Visibility ModPackConflictWarningVisibility => String.IsNullOrEmpty(ModPackConflictWarning) ? Visibility.Collapsed : Visibility.Visible;
+
+        public Visibility ChooseCustomFontVisibility => !String.IsNullOrEmpty(TextFontTask.NewState) ? Visibility.Collapsed : Visibility.Visible;
+
+        public Visibility DeleteCustomFontVisibility => !String.IsNullOrEmpty(TextFontTask.NewState) ? Visibility.Visible : Visibility.Collapsed;
+
+        public ICommand ManageCustomFontCommand => new RelayCommand(ManageCustomFont);
+
+        public ICommand OpenCompatSettingsCommand => new RelayCommand(OpenCompatSettings);
+
+        public ICommand OpenIconColorPickerCommand => new RelayCommand(OpenIconColorPicker);
+
+        public IconColorModPresetTask IconColorTask { get; } = new();
+
+        public bool IconColorEnabled
+        {
+            get => IconColorTask.Enabled;
+            set
+            {
+                App.Settings.Prop.IconColorEnabled = value;
+                IconColorTask.Enabled = value;
+            }
+        }
+
+        public string IconColor
+        {
+            get => IconColorTask.Color;
+            set
+            {
+                App.Settings.Prop.IconColor = BuilderIconColorizer.IsValidHexColor(value) ? value.ToUpperInvariant() : value;
+                IconColorTask.Color = App.Settings.Prop.IconColor;
+                OnPropertyChanged(nameof(IconColorPreview));
+            }
+        }
+
+        public string IconColorPreview => BuilderIconColorizer.IsValidHexColor(IconColor) ? IconColor : "#FFFFFF";
+
+        private void OpenIconColorPicker()
+        {
+            using var dialog = new System.Windows.Forms.ColorDialog
+            {
+                AllowFullOpen = true,
+                AnyColor = true,
+                FullOpen = true,
+                Color = System.Drawing.ColorTranslator.FromHtml(IconColorPreview)
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+
+            IconColor = $"#{dialog.Color.R:X2}{dialog.Color.G:X2}{dialog.Color.B:X2}";
+        }
+
+        public ModPresetTask OldAvatarBackgroundTask { get; } = new("OldAvatarBackground", @"ExtraContent\places\Mobile.rbxl", "OldAvatarBackground.rbxl");
+
+        public ModPresetTask OldCharacterSoundsTask { get; } = new("OldCharacterSounds", new()
+        {
+            { @"content\sounds\action_footsteps_plastic.mp3", "Sounds.OldWalk.mp3"  },
+            { @"content\sounds\action_jump.mp3",              "Sounds.OldJump.mp3"  },
+            { @"content\sounds\action_get_up.mp3",            "Sounds.OldGetUp.mp3" },
+            { @"content\sounds\action_falling.mp3",           "Sounds.Empty.mp3"    },
+            { @"content\sounds\action_jump_land.mp3",         "Sounds.Empty.mp3"    },
+            { @"content\sounds\action_swim.mp3",              "Sounds.Empty.mp3"    },
+            { @"content\sounds\impact_water.mp3",             "Sounds.Empty.mp3"    }
+        });
+
+        public EmojiModPresetTask EmojiFontTask { get; } = new();
+
+        public EnumModPresetTask<Enums.CursorType> CursorTypeTask { get; } = new("CursorType", new()
+        {
+            {
+                Enums.CursorType.From2006, new()
+                {
+                    { @"content\textures\Cursors\KeyboardMouse\ArrowCursor.png",    "Cursor.From2006.ArrowCursor.png"    },
+                    { @"content\textures\Cursors\KeyboardMouse\ArrowFarCursor.png", "Cursor.From2006.ArrowFarCursor.png" }
+                }
+            },
+            {
+                Enums.CursorType.From2013, new()
+                {
+                    { @"content\textures\Cursors\KeyboardMouse\ArrowCursor.png",    "Cursor.From2013.ArrowCursor.png"    },
+                    { @"content\textures\Cursors\KeyboardMouse\ArrowFarCursor.png", "Cursor.From2013.ArrowFarCursor.png" }
+                }
+            }
+        });
+
+        public FontModPresetTask TextFontTask { get; } = new();
+
+        private void OpenCompatSettings()
+        {
+            string path = new RobloxPlayerData().ExecutablePath;
+
+            if (File.Exists(path))
+                PInvoke.SHObjectProperties(HWND.Null, SHOP_TYPE.SHOP_FILEPATH, path, "Compatibility");
+            else
+                Frontend.ShowMessageBox(Strings.Common_RobloxNotInstalled, MessageBoxImage.Error);
+
+        }
+    }
+}

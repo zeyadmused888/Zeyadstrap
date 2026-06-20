@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: "10.0.x"
 
       - name: Restore dependencies
         run: dotnet restore
@@ -34,14 +34,14 @@ jobs:
       - name: Publish
         shell: pwsh
         run: |
-          dotnet publish -p:PublishSingleFile=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -p:DiscordApplicationId="${{ secrets.DISCORD_APPLICATION_ID }}" -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
-          Rename-Item ".\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Zeyadstrap.exe" "Zeyadstrap.exe" -Force
+          dotnet publish -p:PublishSingleFile=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -p:DiscordApplicationId="${{ secrets.DISCORD_APPLICATION_ID }}" -r win-x64 -c Release --self-contained false .\Zeyadstrap\Zeyadstrap.csproj
+          Rename-Item ".\Zeyadstrap\bin\Release\net10.0-windows\win-x64\publish\Zeyadstrap.exe" "Zeyadstrap.exe" -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: Zeyadstrap
-          path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Zeyadstrap.exe
+          path: .\Zeyadstrap\bin\Release\net10.0-windows\win-x64\publish\Zeyadstrap.exe
           if-no-files-found: error
 
   release:
