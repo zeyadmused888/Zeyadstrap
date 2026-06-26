@@ -46,6 +46,13 @@ namespace Zeyadstrap.Models.Entities
 
         public ServerType ServerType { get; set; } = ServerType.Public;
 
+        public bool CanRejoinServer => ServerType switch
+        {
+            ServerType.Public => !string.IsNullOrEmpty(JobId),
+            ServerType.Private => !string.IsNullOrEmpty(AccessCode),
+            _ => false
+        };
+
         public DateTime TimeJoined { get; set; }
 
         public DateTime? TimeLeft { get; set; }
@@ -87,9 +94,9 @@ namespace Zeyadstrap.Models.Entities
             string deeplink = $"roblox://experiences/start?placeId={PlaceId}";
 
             if (ServerType == ServerType.Private)
-                deeplink += "&accessCode=" + AccessCode;
-            else
-                deeplink += "&gameInstanceId=" + JobId;
+                deeplink += "&accessCode=" + HttpUtility.UrlEncode(AccessCode);
+            else if (ServerType == ServerType.Public && !string.IsNullOrEmpty(JobId))
+                deeplink += "&gameInstanceId=" + HttpUtility.UrlEncode(JobId);
 
             if (launchData && !string.IsNullOrEmpty(RPCLaunchData))
                 deeplink += "&launchData=" + HttpUtility.UrlEncode(RPCLaunchData);
@@ -150,6 +157,9 @@ namespace Zeyadstrap.Models.Entities
 
         private void RejoinServer()
         {
+            if (!CanRejoinServer)
+                return;
+
             string playerPath = new RobloxPlayerData().ExecutablePath;
 
             Process.Start(playerPath, GetInviteDeeplink(false));

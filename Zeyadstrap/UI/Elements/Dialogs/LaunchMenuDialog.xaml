@@ -1,4 +1,4 @@
-<base:WpfUiWindow x:Class="Zeyadstrap.UI.Elements.Dialogs.LaunchMenuDialog"
+﻿<base:WpfUiWindow x:Class="Zeyadstrap.UI.Elements.Dialogs.LaunchMenuDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,7 +12,7 @@
         Title="Zeyadstrap"
         MinWidth="0"
         MinHeight="0"
-        Width="580"
+        Width="640"
         SizeToContent="Height"
         ResizeMode="NoResize"
         Background="{ui:ThemeResource ApplicationBackgroundBrush}"
@@ -24,65 +24,64 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ui:TitleBar Grid.Row="0" Grid.ColumnSpan="2" Padding="8" ShowMinimize="False" ShowMaximize="False" Title="Zeyadstrap" Icon="pack://application:,,,/Zeyadstrap.ico" CanMaximize="False" KeyboardNavigation.TabNavigation="None" />
+        <ui:TitleBar Grid.Row="0" Padding="8" ShowMinimize="False" ShowMaximize="False" Title="Zeyadstrap" Icon="pack://application:,,,/Zeyadstrap.ico" CanMaximize="False" KeyboardNavigation.TabNavigation="None" />
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Margin="16,10,16,16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="230" />
+                <ColumnDefinition Width="16" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" VerticalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                
-                <Grid Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,32">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Padding="18" CornerRadius="6" Background="{ui:ThemeResource SolidBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" HorizontalAlignment="Center">
+                        <Image Width="72" Height="72" Source="pack://application:,,,/Zeyadstrap.ico" RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Margin="0,12,0,0" Text="Zeyadstrap" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding Version, Mode=OneTime}" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" HorizontalAlignment="Center" />
+                    </StackPanel>
 
-                    <Image Grid.Column="0" Width="64" Height="64" Source="pack://application:,,,/Zeyadstrap.ico" RenderOptions.BitmapScalingMode="HighQuality" />
-                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Zeyadstrap" FontSize="24" />
-                        <TextBlock Text="{Binding Version, Mode=OneTime}" VerticalAlignment="Bottom" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,24,0,0">
+                        <ui:Hyperlink Icon="QuestionCircle48" Content="{x:Static resources:Strings.About_Title}" Command="{Binding LaunchAboutCommand, Mode=OneTime}" HorizontalAlignment="Center" />
+                        <ui:Hyperlink Icon="Book24" Content="{x:Static resources:Strings.LaunchMenu_BloxstrapWiki}" NavigateUri="https://github.com/zeyadmused888/Zeyadstrap/wiki" HorizontalAlignment="Center" />
+                        <ui:Hyperlink Icon="PeopleCommunity28" Content="{x:Static resources:Strings.LaunchMenu_RobloxCommunity}" NavigateUri="https://github.com/zeyadmused888/Zeyadstrap" HorizontalAlignment="Center" />
                     </StackPanel>
                 </Grid>
+            </Border>
 
-                <StackPanel Grid.Row="1" HorizontalAlignment="Center">
-                    <ui:Hyperlink Icon="QuestionCircle48" Content="{x:Static resources:Strings.About_Title}" Command="{Binding LaunchAboutCommand, Mode=OneTime}" HorizontalAlignment="Center" />
-                    <ui:Hyperlink Icon="Book24" Content="{x:Static resources:Strings.LaunchMenu_BloxstrapWiki}" NavigateUri="https://github.com/zeyadmused888/Zeyadstrap/wiki" HorizontalAlignment="Center" />
-                    <ui:Hyperlink Icon="PeopleCommunity28" Content="{x:Static resources:Strings.LaunchMenu_RobloxCommunity}" NavigateUri="https://github.com/zeyadmused888/Zeyadstrap" HorizontalAlignment="Center" />
-                </StackPanel>
-            </Grid>
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Launch" FontSize="20" FontWeight="SemiBold" />
+                <TextBlock Margin="0,2,0,10" Text="Choose what to open next." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
 
-            <StackPanel Grid.Column="1" Margin="16">
-                <ui:CardAction Icon="ArrowRight12" TabIndex="0" Command="{Binding LaunchRobloxCommand, Mode=OneTime}">
+                <ui:CardAction Icon="Play28" TabIndex="0" Command="{Binding LaunchRobloxCommand, Mode=OneTime}">
                     <StackPanel>
-                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.LaunchMenu_LaunchRoblox}" />
+                        <TextBlock FontSize="14" FontWeight="Medium" Text="{x:Static resources:Strings.LaunchMenu_LaunchRoblox}" />
                     </StackPanel>
                 </ui:CardAction>
 
                 <ui:CardAction Margin="0,8,0,0" Icon="Wrench24" Command="{Binding LaunchRobloxStudioCommand, Mode=OneTime}">
                     <StackPanel>
-                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.LaunchMenu_LaunchRobloxStudio}" />
+                        <TextBlock FontSize="14" FontWeight="Medium" Text="{x:Static resources:Strings.LaunchMenu_LaunchRobloxStudio}" />
                     </StackPanel>
                 </ui:CardAction>
 
                 <ui:CardAction Margin="0,8,0,0" TabIndex="1" Icon="Settings28" Command="{Binding LaunchSettingsCommand, Mode=OneTime}">
                     <StackPanel>
-                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.LaunchMenu_ConfigureSettings}" />
+                        <TextBlock FontSize="14" FontWeight="Medium" Text="{x:Static resources:Strings.LaunchMenu_ConfigureSettings}" />
                     </StackPanel>
                 </ui:CardAction>
 
-                <Border Margin="16" />
+                <TextBlock Margin="0,18,0,10" Text="Help" FontSize="20" FontWeight="SemiBold" />
 
-                <ui:CardAction Margin="0,8,0,0" TabIndex="2" Icon="BookQuestionMark24" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="https://bloxstraplabs.com/wiki/help/">
+                <ui:CardAction TabIndex="2" Icon="BookQuestionMark24" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="https://bloxstraplabs.com/wiki/help/">
                     <StackPanel>
-                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.LaunchMenu_Wiki_Title}" />
-                        <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.LaunchMenu_Wiki_Description}" Padding="0,0,16,0"  Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                        <TextBlock FontSize="14" FontWeight="Medium" Text="{x:Static resources:Strings.LaunchMenu_Wiki_Title}" />
+                        <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.LaunchMenu_Wiki_Description}" Padding="0,0,16,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
                     </StackPanel>
                 </ui:CardAction>
             </StackPanel>

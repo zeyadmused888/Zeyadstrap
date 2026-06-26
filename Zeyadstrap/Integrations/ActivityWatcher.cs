@@ -168,6 +168,12 @@
                 return;
             }
 
+            if (Data.PlaceId != 0 && GameMessageEntries.Any(logMessage.StartsWith))
+            {
+                TryReadRPCMessage(logMessage);
+                return;
+            }
+
             if (!InGame && Data.PlaceId == 0)
             {
                 // We are not in a game, nor are in the process of joining one
@@ -229,25 +235,7 @@
 
                 if (logMessage.StartsWith(GameJoiningUniverseEntry))
                 {
-                    var match = Regex.Match(logMessage, GameJoiningUniversePattern);
-
-                    if (match.Groups.Count != 3)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Failed to assert format for game join universe entry");
-                        App.Logger.WriteLine(LOG_IDENT, logMessage);
-                        return;
-                    }
-
-                    Data.UniverseId = Int64.Parse(match.Groups[1].Value);
-                    Data.UserId = Int64.Parse(match.Groups[2].Value);
-
-                    if (History.Any())
-                    {
-                        var lastActivity = History.First();
-
-                        if (Data.UniverseId == lastActivity.UniverseId && Data.IsTeleport)
-                            Data.RootActivity = lastActivity.RootActivity ?? lastActivity;
-                    }
+                    TryReadJoiningUniverse(logMessage);
                 }
                 else if (logMessage.StartsWith(GameJoiningUDMUXEntry))
                 {
@@ -303,85 +291,125 @@
                     _teleportMarker = true;
                     _reservedTeleportMarker = true;
                 }
-                else if (GameMessageEntries.Any(logMessage.StartsWith))
+                else if (logMessage.StartsWith(GameJoiningUniverseEntry))
                 {
-                    var match = Regex.Match(logMessage, GameMessageEntryPattern);
+                    long previousUniverseId = Data.UniverseId;
 
-                    if (match.Groups.Count != 2)
+                    if (TryReadJoiningUniverse(logMessage) && previousUniverseId == 0)
                     {
-                        App.Logger.WriteLine(LOG_IDENT, $"Failed to assert format for RPC message entry");
-                        App.Logger.WriteLine(LOG_IDENT, logMessage);
-                        return;
+                        App.Logger.WriteLine(LOG_IDENT, "Retrying game join notification after late universe data");
+                        OnGameJoin?.Invoke(this, EventArgs.Empty);
                     }
-
-                    string messagePlain = match.Groups[1].Value;
-                    Message? message;
-
-                    App.Logger.WriteLine(LOG_IDENT, $"Received message: '{messagePlain}'");
-
-                    try
-                    {
-                        message = JsonSerializer.Deserialize<Message>(messagePlain);
-                    }
-                    catch (Exception)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization threw an exception)");
-                        return;
-                    }
-
-                    if (message is null)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization returned null)");
-                        return;
-                    }
-
-                    if (string.IsNullOrEmpty(message.Command))
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (Command is empty)");
-                        return;
-                    }
-
-                    if (_lastRpcRequests.TryGetValue(message.Command, out var lastRequest) && (DateTime.Now - lastRequest).TotalSeconds <= 1)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, $"Dropping {message.Command} message as ratelimit has been hit");
-                        return;
-                    }
-                    if (message.Command == "SetLaunchData")
-                    {
-                        string? data;
-
-                        try
-                        {
-                            data = message.Data.Deserialize<string>();
-                        }
-                        catch (Exception)
-                        {
-                            App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization threw an exception)");
-                            return;
-                        }
-
-                        if (data is null)
-                        {
-                            App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization returned null)");
-                            return;
-                        }
-
-                        if (data.Length > 200)
-                        {
-                            App.Logger.WriteLine(LOG_IDENT, "Data cannot be longer than 200 characters");
-                            return;
-                        }
-
-                        Data.RPCLaunchData = data;
-                    }
-
-                    OnRPCMessage?.Invoke(this, message);
-
-                    _lastRpcRequests[message.Command] = DateTime.Now;
                 }
             }
         }
 
+        private bool TryReadJoiningUniverse(string logMessage)
+        {
+            const string LOG_IDENT = "ActivityWatcher::TryReadJoiningUniverse";
+
+            var match = Regex.Match(logMessage, GameJoiningUniversePattern);
+
+            if (match.Groups.Count != 3)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to assert format for game join universe entry");
+                App.Logger.WriteLine(LOG_IDENT, logMessage);
+                return false;
+            }
+
+            Data.UniverseId = Int64.Parse(match.Groups[1].Value);
+            Data.UserId = Int64.Parse(match.Groups[2].Value);
+
+            if (History.Any())
+            {
+                var lastActivity = History.First();
+
+                if (Data.UniverseId == lastActivity.UniverseId && Data.IsTeleport)
+                    Data.RootActivity = lastActivity.RootActivity ?? lastActivity;
+            }
+
+            return true;
+        }
+
+        private void TryReadRPCMessage(string logMessage)
+        {
+            const string LOG_IDENT = "ActivityWatcher::TryReadRPCMessage";
+
+            var match = Regex.Match(logMessage, GameMessageEntryPattern);
+
+            if (match.Groups.Count != 2)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to assert format for RPC message entry");
+                App.Logger.WriteLine(LOG_IDENT, logMessage);
+                return;
+            }
+
+            string messagePlain = match.Groups[1].Value;
+            Message? message;
+
+            App.Logger.WriteLine(LOG_IDENT, $"Received message: '{messagePlain}'");
+
+            try
+            {
+                message = JsonSerializer.Deserialize<Message>(messagePlain);
+            }
+            catch (Exception)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization threw an exception)");
+                return;
+            }
+
+            if (message is null)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization returned null)");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(message.Command))
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (Command is empty)");
+                return;
+            }
+
+            if (_lastRpcRequests.TryGetValue(message.Command, out var lastRequest) && (DateTime.Now - lastRequest).TotalSeconds <= 1)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Dropping {message.Command} message as ratelimit has been hit");
+                return;
+            }
+
+            if (message.Command == "SetLaunchData")
+            {
+                string? data;
+
+                try
+                {
+                    data = message.Data.Deserialize<string>();
+                }
+                catch (Exception)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization threw an exception)");
+                    return;
+                }
+
+                if (data is null)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization returned null)");
+                    return;
+                }
+
+                if (data.Length > 200)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Data cannot be longer than 200 characters");
+                    return;
+                }
+
+                Data.RPCLaunchData = data;
+            }
+
+            OnRPCMessage?.Invoke(this, message);
+
+            _lastRpcRequests[message.Command] = DateTime.Now;
+        }
         public void Dispose()
         {
             IsDisposed = true;

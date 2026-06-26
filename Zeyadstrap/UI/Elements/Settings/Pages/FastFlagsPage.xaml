@@ -13,20 +13,40 @@
       Scrollable="True"
       Loaded="Page_Loaded">
     <StackPanel Margin="0,0,14,14">
-        <TextBlock Margin="0,0,0,16" Text="{x:Static resources:Strings.Menu_FastFlags_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Grid Margin="0,0,0,14">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <ui:SymbolIcon Grid.Column="0" Symbol="Flag24" FontSize="22" Margin="0,2,10,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+    <StackPanel Grid.Column="1">
+        <TextBlock Text="{x:Static resources:Strings.Menu_FastFlags_Title}" FontSize="20" FontWeight="SemiBold" />
+        <TextBlock Text="{x:Static resources:Strings.Menu_FastFlags_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+    </StackPanel>
+</Grid>
 
-        <controls:OptionControl 
+        <controls:OptionControl
             Header="{x:Static resources:Strings.Menu_FastFlags_ManagerEnabled_Title}"
             Description="{x:Static resources:Strings.Menu_FastFlags_ManagerEnabled_Description}">
             <ui:ToggleSwitch IsChecked="{Binding UseFastFlagManager, Mode=TwoWay}" />
         </controls:OptionControl>
 
-        <TextBlock Text="{x:Static resources:Strings.Common_Presets}" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" />
+        <Grid Margin="0,18,0,10">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <ui:SymbolIcon Grid.Column="0" Symbol="EditSettings24" FontSize="22" Margin="0,2,10,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+    <StackPanel Grid.Column="1">
+        <TextBlock Text="{x:Static resources:Strings.Common_Presets}" FontSize="20" FontWeight="SemiBold" />
+        <TextBlock Text="Rendering and engine presets for Roblox." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+    </StackPanel>
+</Grid>
 
         <TextBlock Text="{x:Static resources:Strings.Menu_FastFlags_Presets_Categories_Rendering}" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
         <controls:MarkdownTextBlock MarkdownText="{Binding Source={x:Static resources:Strings.Menu_FastFlags_Presets_D3DExclusiveFullscreenInfo}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://bloxstraplabs.com/wiki/features/engine-settings/#exclusive-fullscreen'}"  Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 
-        <controls:OptionControl 
+        <controls:OptionControl
             Header="{x:Static resources:Strings.Menu_FastFlags_Presets_MSAA_Title}">
             <ComboBox Margin="5,0,0,0" Padding="10,5,10,5" Width="200" ItemsSource="{Binding MSAALevels.Keys, Mode=OneTime}" Text="{Binding SelectedMSAALevel, Mode=TwoWay}">
                 <ComboBox.ItemTemplate>
@@ -37,14 +57,14 @@
             </ComboBox>
         </controls:OptionControl>
 
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_FastFlags_Presets_FixDisplayScaling_Title}" 
-            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_FixDisplayScaling_Description}" 
+        <controls:OptionControl
+            Header="{x:Static resources:Strings.Menu_FastFlags_Presets_FixDisplayScaling_Title}"
+            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_FixDisplayScaling_Description}"
             HelpLink="https://bloxstraplabs.com/wiki/features/engine-settings/#preserving-rendering-quality">
             <ui:ToggleSwitch IsChecked="{Binding FixDisplayScaling, Mode=TwoWay}" />
         </controls:OptionControl>
 
-        <controls:OptionControl 
+        <controls:OptionControl
             Header="{x:Static resources:Strings.Menu_FastFlags_Presets_TextureQuality_Title}">
             <ComboBox Margin="5,0,0,0" Padding="10,5,10,5" Width="200" ItemsSource="{Binding TextureQualities.Keys, Mode=OneTime}" Text="{Binding SelectedTextureQuality, Mode=TwoWay}">
                 <ComboBox.ItemTemplate>
@@ -55,7 +75,7 @@
             </ComboBox>
         </controls:OptionControl>
 
-        <controls:OptionControl 
+        <controls:OptionControl
             Margin="0,24,0,0"
             Header="{x:Static resources:Strings.Menu_FastFlags_Reset_Title}">
             <ui:ToggleSwitch IsChecked="{Binding ResetConfiguration, Mode=TwoWay}" />

@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using Zeyadstrap.Models.RobloxApi;
 using DiscordRPC;
 
@@ -466,7 +466,7 @@ namespace Zeyadstrap.Integrations
             // this is used for configuration from BloxstrapRPC
             _originalPresence = _currentPresence.Clone();
 
-            if (_messageQueue.Any())
+            while (_messageQueue.Any())
             {
                 App.Logger.WriteLine(LOG_IDENT, "Processing queued messages");
                 ProcessRPCMessage(_messageQueue.Dequeue(), false);
@@ -485,15 +485,7 @@ namespace Zeyadstrap.Integrations
 
             if (!App.Settings.Prop.HideRPCButtons)
             {
-                bool canJoinServer = data.ServerType switch
-                {
-                    ServerType.Public => !String.IsNullOrEmpty(data.JobId),
-                    ServerType.Private => !String.IsNullOrEmpty(data.AccessCode),
-                    ServerType.Reserved => !String.IsNullOrEmpty(data.RPCLaunchData),
-                    _ => false
-                };
-
-                if (canJoinServer)
+                if (data.CanRejoinServer)
                 {
                     buttons.Add(new Button
                     {

@@ -12,122 +12,203 @@
       d:DesignHeight="1080" d:DesignWidth="800"
       Title="IntegrationsPage"
       Scrollable="True">
-    <StackPanel Margin="0,0,14,14">
-        <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-
-        <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_ActivityTracking}" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" />
-
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_Integrations_EnableActivityTracking_Title}" 
-            Description="{x:Static resources:Strings.Menu_Integrations_EnableActivityTracking_Description}" 
-            HelpLink="https://bloxstraplabs.com/wiki/features/activity-tracking/"
-            x:Name="ActivityTrackingOption">
-            <ui:ToggleSwitch IsChecked="{Binding ActivityTrackingEnabled, Mode=TwoWay}" />
-        </controls:OptionControl>
-
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_Integrations_QueryServerLocation_Title}" 
-            Description="{Binding Source={x:Static resources:Strings.Menu_Integrations_QueryServerLocation_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://ipinfo.io'}"
-            HelpLink="https://bloxstraplabs.com/wiki/features/server-location-hints/"
-            IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
-            <ui:ToggleSwitch IsChecked="{Binding ShowServerDetailsEnabled, Mode=TwoWay}" />
-        </controls:OptionControl>
-
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_Integrations_DesktopApp_Title}" 
-            Description="{Binding Source={x:Static resources:Strings.Menu_Integrations_DesktopApp_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://bloxstraplabs.com/wiki/features/dont-exit-to-desktop-app/'}"
-            HelpLink="https://bloxstraplabs.com/wiki/features/dont-exit-to-desktop-app/"
-            IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
-            <ui:ToggleSwitch IsChecked="{Binding DisableAppPatchEnabled, Mode=TwoWay}" />
-        </controls:OptionControl>
-
-        <TextBlock Text="{x:Static resources:Strings.Common_DiscordRichPresence}" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" />
-
-        <controls:OptionControl
-            Header="Show Zeyadstrap activity"
-            Description="Show when you are in the launcher, settings, or launching Roblox/Studio.">
-            <ui:ToggleSwitch IsChecked="{Binding ZeyadstrapActivityEnabled, Mode=TwoWay}" />
-        </controls:OptionControl>
-        <controls:MarkdownTextBlock MarkdownText="{Binding Source={x:Static resources:Strings.Menu_Integrations_RequiresActivityTracking}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://bloxstraplabs.com/wiki/features/discord-rich-presence/'}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_Integrations_ShowGameActivity_Title}" 
-            Description="{Binding Source={x:Static resources:Strings.Menu_Integrations_ShowGameActivity_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://bloxstraplabs.com/wiki/help/discord-rich-presence-not-working/'}"
-            IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}"
-            x:Name="DiscordActivityOption">
-            <ui:ToggleSwitch IsChecked="{Binding DiscordActivityEnabled, Mode=TwoWay}" />
-        </controls:OptionControl>
-
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_Integrations_AllowActivityJoining_Title}" 
-            Description="{x:Static resources:Strings.Menu_Integrations_AllowActivityJoining_Description}"
-            IsEnabled="{Binding InnerContent.IsChecked, ElementName=DiscordActivityOption, Mode=OneWay}">
-            <ui:ToggleSwitch IsChecked="{Binding DiscordActivityJoinEnabled, Mode=TwoWay}" />
-        </controls:OptionControl>
-
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_Integrations_ShowAccountOnProfile_Title}" 
-            Description="{x:Static resources:Strings.Menu_Integrations_ShowAccountOnProfile_Description}"
-            IsEnabled="{Binding InnerContent.IsChecked, ElementName=DiscordActivityOption, Mode=OneWay}">
-            <ui:ToggleSwitch IsChecked="{Binding DiscordAccountOnProfile, Mode=TwoWay}" />
-        </controls:OptionControl>
-
-        <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Custom_Title}" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" />
-        <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Custom_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-        <Grid Margin="0,8,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <ListBox x:Name="CustomIntegrationsListBox" Grid.Row="0" Grid.Column="0" Margin="0,0,4,0" ItemsSource="{Binding CustomIntegrations, Mode=OneWay}" DisplayMemberPath="Name" SelectionChanged="CustomIntegrationSelection" SelectedIndex="{Binding SelectedCustomIntegrationIndex, Mode=TwoWay}" />
-            <Grid Grid.Row="1" Grid.Column="0" Margin="0,8,4,0">
+    <StackPanel Margin="0,0,14,20">
+        <Border Padding="14" CornerRadius="6" Background="{DynamicResource ControlFillColorSecondaryBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <ui:Button Grid.Column="0" Margin="0,0,4,0" Icon="Add28" Content="{x:Static resources:Strings.Common_New}" HorizontalAlignment="Stretch" Command="{Binding AddIntegrationCommand, Mode=OneTime}" />
-                <ui:Button Grid.Column="1" Margin="4,0,0,0" Icon="Delete28" Content="{x:Static resources:Strings.Common_Delete}" HorizontalAlignment="Stretch" Appearance="Danger" IsEnabled="{Binding IsCustomIntegrationSelected, Mode=OneWay}" Command="{Binding DeleteIntegrationCommand, Mode=OneTime}" />
+                <ui:SymbolIcon Grid.Column="0" Symbol="AppsAddIn28" FontSize="22" Margin="0,1,12,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Description}" FontSize="14" TextWrapping="Wrap" />
+                    <TextBlock Margin="0,4,0,0" Text="Activity tracking must stay enabled for game detection, Discord game presence, server location hints, and desktop-app close behavior." FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
             </Grid>
-            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="4,0,0,0">
-                <StackPanel.Style>
-                    <Style>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsCustomIntegrationSelected}" Value="False">
-                                <Setter Property="StackPanel.Visibility" Value="Hidden"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
-                <TextBlock Text="{x:Static resources:Strings.Common_Name}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                <ui:TextBox Margin="0,4,0,0" Text="{Binding SelectedCustomIntegration.Name, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock Margin="0,8,0,0" Text="{x:Static resources:Strings.Menu_Integrations_Custom_AppLocation}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                <Grid Margin="0,4,0,0">
+        </Border>
+
+        <Grid Margin="0,22,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ui:SymbolIcon Grid.Column="0" Symbol="DesktopPulse24" FontSize="22" Margin="0,2,10,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_ActivityTracking}" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Text="Roblox session detection and app lifecycle hooks." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </Grid>
+            <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                <controls:OptionControl
+                    Header="{x:Static resources:Strings.Menu_Integrations_EnableActivityTracking_Title}"
+                    Description="{x:Static resources:Strings.Menu_Integrations_EnableActivityTracking_Description}"
+                    HelpLink="https://bloxstraplabs.com/wiki/features/activity-tracking/"
+                    x:Name="ActivityTrackingOption">
+                    <ui:ToggleSwitch IsChecked="{Binding ActivityTrackingEnabled, Mode=TwoWay}" />
+                </controls:OptionControl>
+
+                <controls:OptionControl
+                    Header="{x:Static resources:Strings.Menu_Integrations_QueryServerLocation_Title}"
+                    Description="{Binding Source={x:Static resources:Strings.Menu_Integrations_QueryServerLocation_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://ipinfo.io'}"
+                    HelpLink="https://bloxstraplabs.com/wiki/features/server-location-hints/"
+                    IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
+                    <ui:ToggleSwitch IsChecked="{Binding ShowServerDetailsEnabled, Mode=TwoWay}" />
+                </controls:OptionControl>
+
+                <controls:OptionControl
+                    Header="{x:Static resources:Strings.Menu_Integrations_DesktopApp_Title}"
+                    Description="{Binding Source={x:Static resources:Strings.Menu_Integrations_DesktopApp_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://bloxstraplabs.com/wiki/features/dont-exit-to-desktop-app/'}"
+                    HelpLink="https://bloxstraplabs.com/wiki/features/dont-exit-to-desktop-app/"
+                    IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
+                    <ui:ToggleSwitch IsChecked="{Binding DisableAppPatchEnabled, Mode=TwoWay}" />
+                </controls:OptionControl>
+            </StackPanel>
+        </Grid>
+
+        <Grid Margin="0,24,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ui:SymbolIcon Grid.Column="0" Symbol="PresenceAvailable24" FontSize="22" Margin="0,2,10,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="{x:Static resources:Strings.Common_DiscordRichPresence}" FontSize="20" FontWeight="SemiBold" />
+                    <controls:MarkdownTextBlock Margin="0,2,0,0" MarkdownText="{Binding Source={x:Static resources:Strings.Menu_Integrations_RequiresActivityTracking}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://bloxstraplabs.com/wiki/features/discord-rich-presence/'}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </Grid>
+            <Border Grid.Row="1" Margin="0,10,0,2" Padding="12" CornerRadius="6" Background="{DynamicResource SystemFillColorCautionBackgroundBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ui:SymbolIcon Grid.Column="0" Symbol="InfoShield20" FontSize="18" Margin="0,1,10,0" />
+                    <TextBlock Grid.Column="1" Text="Join buttons are only shown when Zeyadstrap has a safe public or private server link. Reserved teleport sessions stay hidden to avoid invalid Roblox launch links." TextWrapping="Wrap" />
+                </Grid>
+            </Border>
+            <StackPanel Grid.Row="2">
+                <controls:OptionControl
+                    Header="Show Zeyadstrap activity"
+                    Description="Show when you are in the launcher, settings, or launching Roblox/Studio.">
+                    <ui:ToggleSwitch IsChecked="{Binding ZeyadstrapActivityEnabled, Mode=TwoWay}" />
+                </controls:OptionControl>
+
+                <controls:OptionControl
+                    Header="{x:Static resources:Strings.Menu_Integrations_ShowGameActivity_Title}"
+                    Description="{Binding Source={x:Static resources:Strings.Menu_Integrations_ShowGameActivity_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://bloxstraplabs.com/wiki/help/discord-rich-presence-not-working/'}"
+                    IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}"
+                    x:Name="DiscordActivityOption">
+                    <ui:ToggleSwitch IsChecked="{Binding DiscordActivityEnabled, Mode=TwoWay}" />
+                </controls:OptionControl>
+
+                <controls:OptionControl
+                    Header="{x:Static resources:Strings.Menu_Integrations_AllowActivityJoining_Title}"
+                    Description="{x:Static resources:Strings.Menu_Integrations_AllowActivityJoining_Description}"
+                    IsEnabled="{Binding InnerContent.IsChecked, ElementName=DiscordActivityOption, Mode=OneWay}">
+                    <ui:ToggleSwitch IsChecked="{Binding DiscordActivityJoinEnabled, Mode=TwoWay}" />
+                </controls:OptionControl>
+
+                <controls:OptionControl
+                    Header="{x:Static resources:Strings.Menu_Integrations_ShowAccountOnProfile_Title}"
+                    Description="{x:Static resources:Strings.Menu_Integrations_ShowAccountOnProfile_Description}"
+                    IsEnabled="{Binding InnerContent.IsChecked, ElementName=DiscordActivityOption, Mode=OneWay}">
+                    <ui:ToggleSwitch IsChecked="{Binding DiscordAccountOnProfile, Mode=TwoWay}" />
+                </controls:OptionControl>
+            </StackPanel>
+        </Grid>
+
+        <Grid Margin="0,24,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ui:SymbolIcon Grid.Column="0" Symbol="AppFolder28" FontSize="22" Margin="0,2,10,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Custom_Title}" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Custom_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1" Margin="0,12,0,0" MinHeight="292">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="280" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6">
+                    <ListBox x:Name="CustomIntegrationsListBox" BorderThickness="0" ItemsSource="{Binding CustomIntegrations, Mode=OneWay}" DisplayMemberPath="Name" SelectionChanged="CustomIntegrationSelection" SelectedIndex="{Binding SelectedCustomIntegrationIndex, Mode=TwoWay}" />
+                </Border>
+                <Grid Grid.Row="1" Grid.Column="0" Margin="0,10,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ui:TextBox Grid.Column="0" Margin="0,0,0,0" PlaceholderText="C:\Windows\System32\cmd.exe" Text="{Binding SelectedCustomIntegration.Location}" />
-                    <ui:Button Grid.Column="1" Margin="8,0,0,0" Height="34" Icon="Folder24" Content="{x:Static resources:Strings.Common_Browse}" Command="{Binding BrowseIntegrationLocationCommand}" />
+                    <ui:Button Grid.Column="0" Icon="Add28" Content="{x:Static resources:Strings.Common_New}" HorizontalAlignment="Stretch" Command="{Binding AddIntegrationCommand, Mode=OneTime}" />
+                    <ui:Button Grid.Column="2" Icon="Delete28" Content="{x:Static resources:Strings.Common_Delete}" HorizontalAlignment="Stretch" Appearance="Danger" IsEnabled="{Binding IsCustomIntegrationSelected, Mode=OneWay}" Command="{Binding DeleteIntegrationCommand, Mode=OneTime}" />
                 </Grid>
-                <TextBlock Margin="0,8,0,0" Text="{x:Static resources:Strings.Menu_Integrations_Custom_LaunchArgs}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                <ui:TextBox Margin="0,4,0,0" PlaceholderText="{Binding Source='/k echo {0}', Converter={StaticResource StringFormatConverter}, ConverterParameter={x:Static resources:Strings.Menu_Integrations_Custom_LaunchArgs_Placeholder}}" Text="{Binding SelectedCustomIntegration.LaunchArgs}" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True" />
-                <CheckBox Margin="0,8,0,0" Content="{x:Static resources:Strings.Menu_Integrations_Custom_AutoClose}" IsChecked="{Binding SelectedCustomIntegration.AutoClose}" />
-            </StackPanel>
-            <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Text="{x:Static resources:Strings.Menu_Integrations_Custom_NoneSelected}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock.Style>
-                    <Style>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsCustomIntegrationSelected}" Value="True">
-                                <Setter Property="TextBlock.Visibility" Value="Hidden"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
+                <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Padding="14" CornerRadius="6" Background="{DynamicResource ControlFillColorSecondaryBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+                    <Grid>
+                        <StackPanel>
+                            <StackPanel.Style>
+                                <Style>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCustomIntegrationSelected}" Value="False">
+                                            <Setter Property="StackPanel.Visibility" Value="Hidden" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <TextBlock Text="{x:Static resources:Strings.Common_Name}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <ui:TextBox Margin="0,4,0,0" Text="{Binding SelectedCustomIntegration.Name, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock Margin="0,12,0,0" Text="{x:Static resources:Strings.Menu_Integrations_Custom_AppLocation}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <Grid Margin="0,4,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ui:TextBox Grid.Column="0" PlaceholderText="C:\Windows\System32\cmd.exe" Text="{Binding SelectedCustomIntegration.Location}" />
+                                <ui:Button Grid.Column="1" Margin="10,0,0,0" Height="34" Icon="Folder24" Content="{x:Static resources:Strings.Common_Browse}" Command="{Binding BrowseIntegrationLocationCommand}" />
+                            </Grid>
+                            <TextBlock Margin="0,12,0,0" Text="{x:Static resources:Strings.Menu_Integrations_Custom_LaunchArgs}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <ui:TextBox Margin="0,4,0,0" MinHeight="96" PlaceholderText="{Binding Source='/k echo {0}', Converter={StaticResource StringFormatConverter}, ConverterParameter={x:Static resources:Strings.Menu_Integrations_Custom_LaunchArgs_Placeholder}}" Text="{Binding SelectedCustomIntegration.LaunchArgs}" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True" />
+                            <CheckBox Margin="0,12,0,0" Content="{x:Static resources:Strings.Menu_Integrations_Custom_AutoClose}" IsChecked="{Binding SelectedCustomIntegration.AutoClose}" />
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <StackPanel.Style>
+                                <Style>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCustomIntegrationSelected}" Value="True">
+                                            <Setter Property="StackPanel.Visibility" Value="Hidden" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <ui:SymbolIcon Symbol="AppsListDetail24" FontSize="24" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                            <TextBlock Margin="0,8,0,0" Text="{x:Static resources:Strings.Menu_Integrations_Custom_NoneSelected}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </StackPanel>
 </ui:UiPage>
