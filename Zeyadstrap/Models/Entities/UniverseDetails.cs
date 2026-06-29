@@ -41,11 +41,19 @@
             foreach (string strId in ids.Split(','))
             {
                 long id = long.Parse(strId);
+                var gameDetails = gameDetailResponse.Data.FirstOrDefault(x => x.Id == id);
+                var thumbnail = universeThumbnailResponse.Data.FirstOrDefault(x => x.TargetId == id);
+
+                if (gameDetails is null)
+                    throw new InvalidHTTPResponseException($"Roblox API for Game Details did not return universe {id}");
+
+                if (thumbnail is null)
+                    throw new InvalidHTTPResponseException($"Roblox API for Game Thumbnails did not return universe {id}");
 
                 _cache.Add(new UniverseDetails
                 {
-                    Data = gameDetailResponse.Data.Where(x => x.Id == id).First(),
-                    Thumbnail = universeThumbnailResponse.Data.Where(x => x.TargetId == id).First(),
+                    Data = gameDetails,
+                    Thumbnail = thumbnail,
                 });
             }
         }
